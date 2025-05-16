@@ -90,6 +90,39 @@ class MVolaUSSDMenu {
         menu.action?.();
   }
     
+  buyCredit(amount: number, phoneNumber: string): void {
+        console.log(`Achat de ${amount} Ar de crédit pour le numéro ${phoneNumber}.`);
+        console.log("Achat confirmé !");
+  }
+
+    
+  transferMoney(recipient: string, amount: number, description?: string): void {
+        console.log(`Transfert de ${amount} Ar à ${recipient}.`);
+        if (description) console.log(`Motif : ${description}`);
+        console.log("Transfert effectué avec succès !");
+  }
+
+  advanceOrSave(amount: number): void {
+        console.log(`Demande d'avance ou épargne de ${amount} Ar.`);
+        console.log("Opération réussie !");
+  }
+
+  
+  withdrawMoney(agentNumber: string, amount: number): void {
+        console.log(`Retrait de ${amount} Ar chez l'agent ${agentNumber}.`);
+        console.log("Retrait validé !");
+  }
+
+  
+  payBill(billType: string, amount: number): void {
+        console.log(`Paiement de la facture ${billType} d'un montant de ${amount} Ar.`);
+        console.log("Paiement réussi !");
+  }
+
+  checkBalance(pin: string): void {
+        console.log(`Vérification du solde avec le code secret : ${pin}`);
+        console.log("Votre solde est de : 50 000 Ar.");
+  }
 }
 
 
