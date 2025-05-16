@@ -1,3 +1,10 @@
+import * as readline from 'readline';
+
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
+
 class Menu {
     id: string;
     name: string;
@@ -16,8 +23,8 @@ class MVolaUSSDMenu {
   code: string;
   menus: Map<string, Menu>;
 
-  constructor(code: string) {
-    this.code = code;
+  constructor() {
+    this.code = "#111*1";
     this.menus = new Map();
     this.initMenus();
   }
@@ -123,9 +130,28 @@ class MVolaUSSDMenu {
         console.log(`Vérification du solde avec le code secret : ${pin}`);
         console.log("Votre solde est de : 50 000 Ar.");
   }
+
+  simulateProcessing(callback: () => void) {
+    console.log("\nTraitement en cours...");
+    let loadingText = "";
+
+    const loadingInterval = setInterval(() => {
+        process.stdout.write("\rChargement" + loadingText);
+        loadingText = loadingText.length < 3 ? loadingText + "." : "";
+    }, 500);
+
+    const delay = Math.floor(Math.random() * 3000) + 1000;
+    setTimeout(() => {
+        clearInterval(loadingInterval);
+        process.stdout.write("\rChargement terminé.           \n");
+        callback();
+    }, delay);
+  }
+
+
 }
 
 
-const ussdMenu = new MVolaUSSDMenu("#111*1");
+const ussdMenu = new MVolaUSSDMenu();
 ussdMenu.showMenus();
 ussdMenu.chooseMenu("1");
