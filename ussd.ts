@@ -31,104 +31,115 @@ class MVolaUSSDMenu {
 
   
   private initMenus() {
-    this.addMenu(new Menu(
-            "1",
-            "Acheter crédit ou offre Telma",
-            "Achetez du crédit ou des forfaits pour votre numéro ou un autre.",
-            () => console.log("Tu as choisi d'acheter du crédit ou une offre Telma.")
+        this.addMenu(new Menu("1", "Acheter crédit ou offre Telma", "Achetez du crédit pour votre numéro ou un autre.", 
+            () => this.simulateProcessing(() => this.buyCredit())
         ));
-
-        this.addMenu(new Menu(
-            "2",
-            "Transférer argent (vers toute destination)",
-            "Envoyez de l'argent à d'autres utilisateurs, y compris ceux utilisant Orange Money ou Airtel Money.",
-            () => console.log("Tu as choisi de transférer de l'argent.")
-        )); 
-
-        this.addMenu(new Menu(
-            "3",
-            "MVola Avance ou Épargne",
-            "Accédez aux services d'avance de fonds ou d'épargne proposés par MVola.",
-            () => console.log("Tu as choisi MVola Avance ou Épargne.")
+        this.addMenu(new Menu("2", "Transférer argent (vers toute destination)", "Envoyez de l'argent à d'autres utilisateurs.", 
+            () => this.simulateProcessing(() => this.transferMoney())
         ));
-
-        this.addMenu(new Menu(
-            "4",
-            "Retrait d'argent",
-            "Effectuez un retrait d'argent via un agent MVola.",
-            () => console.log("Tu as choisi de faire un retrait d'argent.")
+        this.addMenu(new Menu("3", "MVola Avance ou Épargne", "Accédez aux services d'avance ou épargne.", 
+            () => this.simulateProcessing(() => this.advanceOrSave())
         ));
-
-        this.addMenu(new Menu(
-            "5",
-            "Paiement factures & partenaires",
-            "Payez vos factures (électricité, eau, etc.) ou effectuez des paiements chez les partenaires de MVola.",
-            () => console.log("Tu as choisi de payer une facture ou un partenaire.")
+        this.addMenu(new Menu("4", "Retrait d'argent", "Effectuez un retrait d'argent via un agent MVola.", 
+            () => this.simulateProcessing(() => this.withdrawMoney())
         ));
-
-        this.addMenu(new Menu(
-            "6",
-            "Mon compte",
-            "Consultez votre solde, changez votre code secret, ou accédez à d'autres informations liées à votre compte.",
-            () => console.log("Tu as choisi de consulter ton compte.")
-          ));
-        }
+        this.addMenu(new Menu("5", "Paiement factures & partenaires", "Payez vos factures ou partenaires.", 
+            () => this.simulateProcessing(() => this.payBill())
+        ));
+        this.addMenu(new Menu("6", "Mon compte", "Consultez votre solde ou changez votre code secret.", 
+            () => this.simulateProcessing(() => this.checkBalance())
+        ));
+  }
         
+  askChoice(): void {
+        rl.question("Choisissez une option : ", (choice) => {
+            if (choice === "0") {
+                console.log("Merci d'avoir utilisé MVola. À bientôt !");
+                rl.close();
+            } else if (this.menus.has(choice)) {
+                const menu = this.menus.get(choice);
+                console.log(`\nTu as choisi : ${menu?.name}`);
+                menu?.action?.();
+            } else {
+                console.log("Désolé, ce menu n'existe pas. Essayez encore.");
+                this.showMenus();
+            }
+        });
+  }
   addMenu(menu: Menu): void {
       this.menus.set(menu.id, menu);
   }
 
   showMenus(): void {
-        console.log(`Après avoir composé ${this.code}, vous verrez les options suivantes :\n`);
+        console.log("\n=== MENU MVola ===");
         this.menus.forEach((menu) => {
-          console.log(menu.id + ". " + menu.name);
-          console.log(menu.description + "\n");
+            console.log(`${menu.id}. ${menu.name} - ${menu.description}`);
         });
-
-  }
-
-  chooseMenu(id: string): void {
-        const menu = this.menus.get(id);
-        if (!menu) {
-            console.log("Désolé, ce menu n'existe pas.");
-            return;
-        }
-        console.log(`Tu as choisi : ${menu.name}`);
-        menu.action?.();
-  }
-    
-  buyCredit(amount: number, phoneNumber: string): void {
-        console.log(`Achat de ${amount} Ar de crédit pour le numéro ${phoneNumber}.`);
-        console.log("Achat confirmé !");
-  }
-
-    
-  transferMoney(recipient: string, amount: number, description?: string): void {
-        console.log(`Transfert de ${amount} Ar à ${recipient}.`);
-        if (description) console.log(`Motif : ${description}`);
-        console.log("Transfert effectué avec succès !");
-  }
-
-  advanceOrSave(amount: number): void {
-        console.log(`Demande d'avance ou épargne de ${amount} Ar.`);
-        console.log("Opération réussie !");
+        console.log("0. Précédent (ou quitter)\n");
+        this.askChoice();
   }
 
   
-  withdrawMoney(agentNumber: string, amount: number): void {
-        console.log(`Retrait de ${amount} Ar chez l'agent ${agentNumber}.`);
-        console.log("Retrait validé !");
+    
+   buyCredit(): void {
+        rl.question("Montant du crédit : ", (amount) => {
+            rl.question("Numéro de téléphone : ", (phone) => {
+                console.log(`✅ Achat de ${amount} Ar de crédit pour le numéro ${phone}.`);
+                this.showBackOption();
+            });
+        });
+  }
+
+    
+  transferMoney(): void {
+        rl.question("Numéro du destinataire : ", (recipient) => {
+            rl.question("Montant à transférer : ", (amount) => {
+                console.log(`✅ Transfert de ${amount} Ar à ${recipient} effectué avec succès !`);
+                this.showBackOption();
+            });
+        });
+  }
+
+  advanceOrSave(): void {
+        rl.question("Montant de l'avance ou de l'épargne : ", (amount) => {
+            console.log(`✅ Demande de ${amount} Ar pour avance ou épargne confirmée.`);
+            this.showBackOption();
+        });
   }
 
   
-  payBill(billType: string, amount: number): void {
-        console.log(`Paiement de la facture ${billType} d'un montant de ${amount} Ar.`);
-        console.log("Paiement réussi !");
+  withdrawMoney(): void {
+        rl.question("Numéro de l'agent : ", (agent) => {
+            rl.question("Montant à retirer : ", (amount) => {
+                console.log(`✅ Retrait de ${amount} Ar chez l'agent ${agent}.`);
+                this.showBackOption();
+            });
+        });
   }
 
-  checkBalance(pin: string): void {
-        console.log(`Vérification du solde avec le code secret : ${pin}`);
-        console.log("Votre solde est de : 50 000 Ar.");
+  
+  payBill(): void {
+        rl.question("Nom de la facture (ex: JIRAMA) : ", (billType) => {
+            rl.question("Montant à payer : ", (amount) => {
+                console.log(`✅ Paiement de ${amount} Ar pour ${billType} confirmé.`);
+                this.showBackOption();
+            });
+        });
+  }
+
+  checkBalance(): void {
+        console.log("✅ Votre solde est de : 50 000 Ar.");
+        this.showBackOption();
+  }
+  showBackOption(): void {
+        rl.question("\nTapez 0 pour revenir au menu principal : ", (choice) => {
+            if (choice === "0") {
+                this.showMenus();
+            } else {
+                console.log("Merci d'avoir utilisé MVola. À bientôt !");
+                rl.close();
+            }
+        });
   }
 
   simulateProcessing(callback: () => void) {
@@ -146,12 +157,20 @@ class MVolaUSSDMenu {
         process.stdout.write("\rChargement terminé.           \n");
         callback();
     }, delay);
-  }
-
-
+}
 }
 
 
-const ussdMenu = new MVolaUSSDMenu();
-ussdMenu.showMenus();
-ussdMenu.chooseMenu("1");
+function startMVolaUSSD() {
+    rl.question("Composez le code USSD : ", (code) => {
+        if (code === "#111*1#") {
+            const ussdMenu = new MVolaUSSDMenu();
+            ussdMenu.showMenus();
+        } else {
+            console.log("Code incorrect. Veuillez réessayer.");
+            startMVolaUSSD();
+        }
+    });
+}
+
+startMVolaUSSD();
