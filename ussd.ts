@@ -22,12 +22,9 @@ class MVolaUSSDMenu {
     this.initMenus();
   }
 
-  addMenu(menu: Menu): void {
-        this.menus.set(menu.id, menu);
-    }
-
+  
   private initMenus() {
-        this.addMenu(new Menu(
+    this.addMenu(new Menu(
             "1",
             "Acheter crédit ou offre Telma",
             "Achetez du crédit ou des forfaits pour votre numéro ou un autre.",
@@ -67,11 +64,35 @@ class MVolaUSSDMenu {
             "Mon compte",
             "Consultez votre solde, changez votre code secret, ou accédez à d'autres informations liées à votre compte.",
             () => console.log("Tu as choisi de consulter ton compte.")
-        ));
-    }
+          ));
+        }
+        
+  addMenu(menu: Menu): void {
+      this.menus.set(menu.id, menu);
+  }
 
+  showMenus(): void {
+        console.log(`Après avoir composé ${this.code}, vous verrez les options suivantes :\n`);
+        this.menus.forEach((menu) => {
+          console.log(menu.id + ". " + menu.name);
+          console.log(menu.description + "\n");
+        });
+
+  }
+
+  chooseMenu(id: string): void {
+        const menu = this.menus.get(id);
+        if (!menu) {
+            console.log("Désolé, ce menu n'existe pas.");
+            return;
+        }
+        console.log(`Tu as choisi : ${menu.name}`);
+        menu.action?.();
+  }
     
 }
 
 
 const ussdMenu = new MVolaUSSDMenu("#111*1");
+ussdMenu.showMenus();
+ussdMenu.chooseMenu("1");
